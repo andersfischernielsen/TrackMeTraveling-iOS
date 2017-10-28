@@ -103,7 +103,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.httpMethod = "POST"
-        let parameters = ["latitude": location.latitude, "longitude": location.longitude]
+        let parameters = ["username": "fischer", "latitude": "\(location.latitude)", "longitude": "\(location.longitude)"]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
         } catch let error {
@@ -150,7 +150,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private func setUpdateFailedOnLabel(label: UILabel) {
         DispatchQueue.main.async() {
             label.text = "Update failed."
-            UIView.animate(withDuration: 2, animations: { label.alpha = 0 }, completion: nil)
+            UIView.animate(withDuration: 4, animations: { label.alpha = 0 }, completion: nil)
         }
     }
     
