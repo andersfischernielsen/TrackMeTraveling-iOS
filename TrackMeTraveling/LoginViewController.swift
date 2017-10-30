@@ -20,12 +20,40 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
-    @IBOutlet weak var backgroundView: UIView!
+    @IBOutlet weak var signInOrUpButton: UIButton!
+    @IBOutlet weak var signInStateText: UIButton!
+    
+    //TODO: Use ressources.
+    let signUpText = "Don't have an account? Sign up.";
+    let signInText = "Already have an account? Sign in."
     
     var videoLooper: AVPlayerLooper!;
+    var signInState = true;
     
     @IBAction func login(_ sender: UIButton) {
         login(email: emailField?.text, username: usernameField?.text, password: passwordField?.text);
+    }
+    
+    @IBAction func signInOrUp(_ sender: UIButton) {
+        signInState = !signInState;
+        updateViewsFromSignInState();
+    }
+    
+    func updateViewsFromSignInState() {
+        if (!signInState) {
+            UIView.animate(withDuration: 0.2, animations: {
+                self.emailField.alpha = 1;
+            }, completion: { (value: Bool) in self.emailField.isHidden = false });
+            signInOrUpButton.setTitle("Sign up", for: .normal);
+            signInStateText.setTitle(signInText, for: .normal);
+        }
+        else {
+            UIView.animate(withDuration: 0.2, animations: {
+                self.emailField.alpha = 0;
+            }, completion: { (value: Bool) in self.emailField.isHidden = true });
+            signInOrUpButton.setTitle("Sign in", for: .normal);
+            signInStateText.setTitle(signUpText, for: .normal);
+        }
     }
     
     func login(email: String?, username: String?, password: String?) {
@@ -50,6 +78,7 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad();
         self.setNeedsStatusBarAppearanceUpdate();
+        if (signInState) { emailField.isHidden = true; }
         
         //Setup textfields:
         func setTextField(field: UITextField) {
