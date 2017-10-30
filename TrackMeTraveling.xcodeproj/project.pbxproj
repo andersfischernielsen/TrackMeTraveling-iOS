@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A18CA131FA7C988000FD3AE /* splash.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9A18CA121FA7C437000FD3AE /* splash.mp4 */; };
 		9A836DC31FA7A00000DCCD2C /* KeychainWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A836DC21FA7A00000DCCD2C /* KeychainWrapper.m */; };
 		9A836DC51FA7A43A00DCCD2C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */; };
 		9AA70AEB1F9E1B8D00AB252E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9A18CA121FA7C437000FD3AE /* splash.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = splash.mp4; sourceTree = "<group>"; };
 		9A836DC01FA79FFF00DCCD2C /* TrackMeTraveling-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TrackMeTraveling-Bridging-Header.h"; sourceTree = "<group>"; };
 		9A836DC11FA7A00000DCCD2C /* KeychainWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainWrapper.h; sourceTree = "<group>"; };
 		9A836DC21FA7A00000DCCD2C /* KeychainWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainWrapper.m; sourceTree = "<group>"; };
@@ -82,6 +84,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9A18CA111FA7C424000FD3AE /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				9A18CA121FA7C437000FD3AE /* splash.mp4 */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
 		9AA70ADE1F9E1B8C00AB252E = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +115,7 @@
 		9AA70AE91F9E1B8D00AB252E /* TrackMeTraveling */ = {
 			isa = PBXGroup;
 			children = (
+				9A18CA111FA7C424000FD3AE /* Video */,
 				9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */,
 				9AA70AEC1F9E1B8D00AB252E /* ViewController.swift */,
 				9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */,
@@ -251,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A18CA131FA7C988000FD3AE /* splash.mp4 in Resources */,
 				9AD1FCE01F9E720C0035A5BA /* Settings.bundle in Resources */,
 				9AA70AF51F9E1B8D00AB252E /* LaunchScreen.storyboard in Resources */,
 				9AA70AF21F9E1B8D00AB252E /* Assets.xcassets in Resources */,
