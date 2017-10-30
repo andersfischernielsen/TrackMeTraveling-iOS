@@ -32,6 +32,8 @@ class LoginViewController: UIViewController {
         if (loggedIn) {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self);
             self.dismiss(animated: true, completion: nil);
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate;
+            appDelegate.showMainView(animated: true);
         }
     }
 }

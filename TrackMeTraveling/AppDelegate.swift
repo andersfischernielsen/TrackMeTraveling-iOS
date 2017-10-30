@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Show login view if not logged in already
         if(!isLoggedIn) {
-            showLoginScreen(animated: false);
+            showLoginView(animated: false);
         }
         return true
     }
@@ -36,14 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
-    func showLoginScreen(animated: Bool) {
-        // Get login screen from storyboard and present it
-        let storyboard = UIStoryboard.init(name: "Main", bundle: nil);
-        let viewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController");
-        self.window?.makeKeyAndVisible();
-        self.window?.rootViewController?.present(viewController, animated: animated, completion: nil);
-    }
-
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
@@ -52,6 +44,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    func showLoginView(animated: Bool) {
+        // Get login screen from storyboard and present it
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil);
+        let viewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController");
+        self.window?.rootViewController = viewController;
+    }
     
+    func showMainView(animated: Bool) {
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil);
+        let viewController = storyboard.instantiateViewController(withIdentifier: "ViewController");
+        self.window?.rootViewController = viewController;
+    }
 }
 
