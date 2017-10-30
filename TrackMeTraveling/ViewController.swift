@@ -13,13 +13,15 @@ import MapKit
 class ViewController: UIViewController, CLLocationManagerDelegate {
     var locationManager: CLLocationManager!
     var lastUpdated: Date?
-    let backgroundPreferenceIdentifier = "background_preference_enabled"
     var backgroundEnabled = false
+    let backgroundPreferenceIdentifier = "background_preference_enabled"
+    let keychain = KeychainWrapper()
     
     @IBOutlet weak var backgroundEnabledSwitch: UISwitch!
     @IBOutlet weak var lastUpdatedLabel: UILabel!
     @IBOutlet weak var forceUpdateButton: UIButton!
     @IBOutlet weak var locationView: MKMapView!
+    @IBOutlet weak var loginButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -12,9 +12,13 @@ import CoreLocation
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+    let isLoggedIn: Bool = false;
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Show login view if not logged in already
+        if(!isLoggedIn) {
+            showLoginScreen(animated: false);
+        }
         return true
     }
 
@@ -29,7 +33,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        
+    }
+    
+    func showLoginScreen(animated: Bool) {
+        // Get login screen from storyboard and present it
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil);
+        let viewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController");
+        self.window?.makeKeyAndVisible();
+        self.window?.rootViewController?.present(viewController, animated: animated, completion: nil);
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
