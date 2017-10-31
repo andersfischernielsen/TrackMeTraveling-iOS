@@ -34,6 +34,8 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         styleMapView()
+        //TODO: Use constant:
+        usernameLabel.text = UserDefaults.standard.object(forKey: "user_username") as? String
     }
 
     @objc func didBecomeActive(_ notification: NSNotification) {

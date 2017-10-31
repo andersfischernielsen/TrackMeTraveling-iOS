@@ -22,6 +22,7 @@ struct KeychainConfiguration {
 }
 
 class LoginViewController: UIViewController {
+    //TODO: Move to globl constants class/struct.
     let loggedInIdentifier = "user_logged_in"
     let usernameIdentifier = "user_username"
     let accessTokenIdentifier = "user_access_token"
