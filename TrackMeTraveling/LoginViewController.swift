@@ -69,7 +69,9 @@ class LoginViewController: UIViewController {
 
         UserDefaults.standard.setValue(usernameField.text, forKey: usernameIdentifier)
         UserDefaults.standard.setValue(accessToken, forKey: accessTokenIdentifier)
-        performSegue(withIdentifier: "dismissLogin", sender: self)
+        DispatchQueue.main.async() {
+            self.performSegue(withIdentifier: "dismissLogin", sender: self)
+        }
     }
     
     func updateViewsFromSignInState() {
@@ -118,13 +120,11 @@ class LoginViewController: UIViewController {
                 return
             }
             
-            if (data != nil) {
+            if let json = data {
                 do {
-                    //TODO: jwt token deserialization.
-                    throw "Not implemented"
-                    //let json = try JSONSerialization.jsonObject(with: data!, options: [])
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self);
-                    finished(true, "data.token")
+                    let deSerialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
+                    finished(true, deSerialized?["token"])
                 } catch { finished(false, nil) }
             }
         }
