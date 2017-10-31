@@ -8,34 +8,37 @@
 
 import UIKit
 import CoreLocation
+import CoreData
 import MapKit
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class LocationViewController: UIViewController, CLLocationManagerDelegate {
     var locationManager: CLLocationManager!
     var lastUpdated: Date?
     var backgroundEnabled = false
     let backgroundPreferenceIdentifier = "background_preference_enabled"
     let keychain = KeychainWrapper()
+    var isAuthenticated = false
+    var managedObjectContext: NSManagedObjectContext!
     
     @IBOutlet weak var backgroundEnabledSwitch: UISwitch!
     @IBOutlet weak var lastUpdatedLabel: UILabel!
     @IBOutlet weak var forceUpdateButton: UIButton!
     @IBOutlet weak var locationView: MKMapView!
-    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var usernameLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.alpha = 0;
         //TODO: Implement proper resume after app is relaunched.
         locationManager = CLLocationManager()
         locationManager.delegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        styleMapView()
     }
 
-    //TODO: This is hacky, observer UIApplicationDidBecomeActiveNotification instead.
-    //      NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
-    override func viewWillAppear(_ animated: Bool) {
-        backgroundEnabled = UserDefaults.standard.bool(forKey: backgroundPreferenceIdentifier)
-        startReceivingSignificantLocationChanges()
-        styleMapView()
+    @objc func didBecomeActive(_ notification: NSNotification) {
+        backgroundEnabledSwitch.setOn(UserDefaults.standard.bool(forKey: backgroundPreferenceIdentifier), animated: true)
+        setupReceivingOfSignificationLocationChanges()
     }
     
     private func styleMapView() {
@@ -45,7 +48,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        backgroundEnabledSwitch.isOn = backgroundEnabled
+        showLoginView();
     }
     
     override func didReceiveMemoryWarning() {
@@ -57,18 +60,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager.requestLocation()
         locationManager.stopUpdatingLocation()
-        startReceivingSignificantLocationChanges()
+        setupReceivingOfSignificationLocationChanges()
     }
     
     @IBAction func backgroundSwitchChanged(_ sender: UISwitch) {
         UserDefaults.standard.set(sender.isOn, forKey: backgroundPreferenceIdentifier)
-        backgroundEnabled = sender.isOn
-        startReceivingSignificantLocationChanges()
+        setupReceivingOfSignificationLocationChanges()
     }
     
-    func startReceivingSignificantLocationChanges() {
-        if !backgroundEnabled {
-            locationManager.stopUpdatingLocation()
+    @IBAction func unwindSegue(_ segue: UIStoryboardSegue) {
+        isAuthenticated = true
+        self.view.alpha = 1.0
+    }
+    
+    @IBAction func logoutAction(_ sender: AnyObject) {
+        isAuthenticated = false
+        performSegue(withIdentifier: "loginView", sender: self)
+    }
+    
+    func setupReceivingOfSignificationLocationChanges() {
+        if !(UserDefaults.standard.bool(forKey: backgroundPreferenceIdentifier)) {
+            locationManager.stopMonitoringSignificantLocationChanges()
             return
         }
         
@@ -87,6 +99,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if !(UserDefaults.standard.bool(forKey: self.backgroundPreferenceIdentifier)) {
+            setupReceivingOfSignificationLocationChanges()
+            return;
+        }
+        
         let lastLocation = locations.last?.coordinate
         if lastLocation != nil {
             pushUpdatesToServer(location: lastLocation!)
@@ -133,6 +150,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             }
         }
         task.resume()
+    }
+    
+    func showLoginView() {
+        if !isAuthenticated {
+            performSegue(withIdentifier: "loginView", sender: self)
+        }
     }
     
     private func updateLastUpdated(location: CLLocationCoordinate2D) {

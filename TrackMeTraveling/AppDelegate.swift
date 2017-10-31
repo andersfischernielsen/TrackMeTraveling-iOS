@@ -7,18 +7,18 @@
 //
 
 import UIKit
+import CoreData
 import CoreLocation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let isLoggedIn: Bool = false;
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Show login view if not logged in already
-        if(!isLoggedIn) {
-            showLoginView(animated: false);
-        }
+        //let navigationController = window!.rootViewController as! UINavigationController;
+        //let controller = navigationController.topViewController as! LocationViewController;
+        //controller.managedObjectContext = self.managedObjectContext
         return true
     }
 
@@ -43,18 +43,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-    func showLoginView(animated: Bool) {
-        // Get login screen from storyboard and present it
-        let storyboard = UIStoryboard.init(name: "Main", bundle: nil);
-        let viewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController");
-        self.window?.rootViewController = viewController;
+    
+    lazy var persistentContainer: NSPersistentContainer = {
+        let persistentContainer = NSPersistentContainer(name: "TrackMeTraveling")
+        persistentContainer.loadPersistentStores { (storeDescription, error) in
+            if let error = error {
+                print(error)
+            } else {
+                print("Core Data initiated")
+            }
+        }
+        return persistentContainer
+    }();
+    
+    var managedObjectContext: NSManagedObjectContext {
+        return persistentContainer.viewContext
     }
     
-    func showMainView(animated: Bool) {
-        let storyboard = UIStoryboard.init(name: "Main", bundle: nil);
-        let viewController = storyboard.instantiateViewController(withIdentifier: "ViewController");
-        self.window?.rootViewController = viewController;
+    func saveContext() {
+        guard managedObjectContext.hasChanges else {
+            return
+        }
+        do {
+            try managedObjectContext.save()
+        } catch {
+            print(error)
+        }
     }
 }
 

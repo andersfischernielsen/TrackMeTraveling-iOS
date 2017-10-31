@@ -8,10 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		9A18CA131FA7C988000FD3AE /* splash.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9A18CA121FA7C437000FD3AE /* splash.mp4 */; };
+		9A829E0F1FA91320001A743D /* KeychainPasswordItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A829E0E1FA91320001A743D /* KeychainPasswordItem.swift */; };
 		9A836DC31FA7A00000DCCD2C /* KeychainWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A836DC21FA7A00000DCCD2C /* KeychainWrapper.m */; };
 		9A836DC51FA7A43A00DCCD2C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */; };
 		9AA70AEB1F9E1B8D00AB252E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */; };
-		9AA70AED1F9E1B8D00AB252E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA70AEC1F9E1B8D00AB252E /* ViewController.swift */; };
+		9AA70AED1F9E1B8D00AB252E /* LocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA70AEC1F9E1B8D00AB252E /* LocationViewController.swift */; };
 		9AA70AF01F9E1B8D00AB252E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9AA70AEE1F9E1B8D00AB252E /* Main.storyboard */; };
 		9AA70AF21F9E1B8D00AB252E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AA70AF11F9E1B8D00AB252E /* Assets.xcassets */; };
 		9AA70AF51F9E1B8D00AB252E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9AA70AF31F9E1B8D00AB252E /* LaunchScreen.storyboard */; };
@@ -39,13 +40,14 @@
 
 /* Begin PBXFileReference section */
 		9A18CA121FA7C437000FD3AE /* splash.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = splash.mp4; sourceTree = "<group>"; };
+		9A829E0E1FA91320001A743D /* KeychainPasswordItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainPasswordItem.swift; sourceTree = "<group>"; };
 		9A836DC01FA79FFF00DCCD2C /* TrackMeTraveling-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TrackMeTraveling-Bridging-Header.h"; sourceTree = "<group>"; };
 		9A836DC11FA7A00000DCCD2C /* KeychainWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainWrapper.h; sourceTree = "<group>"; };
 		9A836DC21FA7A00000DCCD2C /* KeychainWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainWrapper.m; sourceTree = "<group>"; };
 		9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		9AA70AE71F9E1B8D00AB252E /* TrackMeTraveling.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackMeTraveling.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		9AA70AEC1F9E1B8D00AB252E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		9AA70AEC1F9E1B8D00AB252E /* LocationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewController.swift; sourceTree = "<group>"; };
 		9AA70AEF1F9E1B8D00AB252E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9AA70AF11F9E1B8D00AB252E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9AA70AF41F9E1B8D00AB252E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -117,8 +119,9 @@
 			children = (
 				9A18CA111FA7C424000FD3AE /* Video */,
 				9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */,
-				9AA70AEC1F9E1B8D00AB252E /* ViewController.swift */,
+				9AA70AEC1F9E1B8D00AB252E /* LocationViewController.swift */,
 				9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */,
+				9A829E0E1FA91320001A743D /* KeychainPasswordItem.swift */,
 				9A836DC11FA7A00000DCCD2C /* KeychainWrapper.h */,
 				9A836DC21FA7A00000DCCD2C /* KeychainWrapper.m */,
 				9AA70AEE1F9E1B8D00AB252E /* Main.storyboard */,
@@ -291,9 +294,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A829E0F1FA91320001A743D /* KeychainPasswordItem.swift in Sources */,
 				9A836DC51FA7A43A00DCCD2C /* LoginViewController.swift in Sources */,
 				9A836DC31FA7A00000DCCD2C /* KeychainWrapper.m in Sources */,
-				9AA70AED1F9E1B8D00AB252E /* ViewController.swift in Sources */,
+				9AA70AED1F9E1B8D00AB252E /* LocationViewController.swift in Sources */,
 				9AA70AEB1F9E1B8D00AB252E /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

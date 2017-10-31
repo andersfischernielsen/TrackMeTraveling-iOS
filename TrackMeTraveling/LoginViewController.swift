@@ -9,14 +9,24 @@
 import Foundation
 import UIKit
 import CoreLocation
-import MapKit
+import CoreData
 import NotificationCenter
 import AVFoundation
 import AVKit
 import QuartzCore
 
+// Keychain Configuration
+struct KeychainConfiguration {
+    static let serviceName = "TrackMeTraveling"
+    static let accessGroup: String? = nil
+}
 
 class LoginViewController: UIViewController {
+    let loggedInIdentifier = "user_logged_in"
+    let usernameIdentifier = "user_username"
+    let accessTokenIdentifier = "user_access_token"
+    let refreshTokenIdentifier = "user_refresh_token"
+    
     @IBOutlet weak var emailField: UITextField!
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
@@ -30,13 +40,36 @@ class LoginViewController: UIViewController {
     var videoLooper: AVPlayerLooper!;
     var signInState = true;
     
-    @IBAction func login(_ sender: UIButton) {
-        login(email: emailField?.text, username: usernameField?.text, password: passwordField?.text);
-    }
-    
     @IBAction func signInOrUp(_ sender: UIButton) {
         signInState = !signInState;
         updateViewsFromSignInState();
+    }
+    
+    @IBAction func loginAction(_ sender: AnyObject) {
+        usernameField.resignFirstResponder()
+        passwordField.resignFirstResponder()
+        
+        login(email: emailField?.text, username: usernameField?.text, password: passwordField?.text, finished: loggedIn);
+    }
+    
+    func loggedIn(success: Bool, accessToken: String?) {
+        if !success { return }
+        
+        if let username = usernameField.text, let password = passwordField.text {
+            if username.isEmpty || password.isEmpty {
+                let alertView = UIAlertController(title: "Coul not log in",
+                                                  message: "Wrong username or password.",
+                                                  preferredStyle:. alert)
+                let okAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
+                alertView.addAction(okAction)
+                present(alertView, animated: true, completion: nil)
+                return
+            }
+        }
+
+        UserDefaults.standard.setValue(usernameField.text, forKey: usernameIdentifier)
+        UserDefaults.standard.setValue(accessToken, forKey: accessTokenIdentifier)
+        performSegue(withIdentifier: "dismissLogin", sender: self)
     }
     
     func updateViewsFromSignInState() {
@@ -56,19 +89,46 @@ class LoginViewController: UIViewController {
         }
     }
     
-    func login(email: String?, username: String?, password: String?) {
+    func login(email: String?, username: String?, password: String?,
+               finished: @escaping ((_: Bool, _: String?)->Void)) {
         if (email == nil || username == nil || password == nil) {
             return;
         }
         
-        let loggedIn: Bool = true;
-        //TODO: Implement login.
-        if (loggedIn) {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self);
-            self.dismiss(animated: true, completion: nil);
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate;
-            appDelegate.showMainView(animated: true);
+        let url = URL(string: "http://127.0.0.1:5000/auth")!
+        var request = URLRequest(url: url)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.httpMethod = "POST"
+        let parameters = ["username": username, "password": password];
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+        } catch let error {
+            print(error.localizedDescription)
         }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let _ = data, error == nil else {
+                print("[Unexpected error on POST] \(String(describing: error))")
+                return
+            }
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
+                print("[Unexpected HTTP response] statusCode should be 200, but is \(httpStatus.statusCode)")
+                print("response = \(String(describing: response))")
+                return
+            }
+            
+            if (data != nil) {
+                do {
+                    //TODO: jwt token deserialization.
+                    throw "Not implemented"
+                    //let json = try JSONSerialization.jsonObject(with: data!, options: [])
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self);
+                    finished(true, "data.token")
+                } catch { finished(false, nil) }
+            }
+        }
+        task.resume();
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -77,6 +137,9 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad();
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         self.setNeedsStatusBarAppearanceUpdate();
         if (signInState) { emailField.isHidden = true; }
         
