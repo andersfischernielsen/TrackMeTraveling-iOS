@@ -150,6 +150,7 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
                     print(httpStatus.statusCode)
                     let (access, refresh) = self.refreshToken()
                     //TODO: Retry with refresh token.
+                    //      If 401 again, log out.
                     self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: true)
                 }
                 else if httpStatus.statusCode == 200 {

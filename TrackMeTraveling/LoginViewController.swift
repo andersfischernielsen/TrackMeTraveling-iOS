@@ -53,7 +53,7 @@ class LoginViewController: UIViewController {
         login(email: emailField?.text, username: usernameField?.text, password: passwordField?.text, finished: loggedIn);
     }
     
-    func loggedIn(success: Bool, accessToken: String?) {
+    func loggedIn(success: Bool, accessToken: String?, refreshToken: String?) {
         if !success { return }
         
         DispatchQueue.main.async() {
@@ -71,6 +71,7 @@ class LoginViewController: UIViewController {
 
             UserDefaults.standard.setValue(self.usernameField.text, forKey: self.usernameIdentifier)
             UserDefaults.standard.setValue(accessToken, forKey: self.accessTokenIdentifier)
+            UserDefaults.standard.setValue(refreshToken, forKey: self.refreshTokenIdentifier)
             self.performSegue(withIdentifier: "dismissLogin", sender: self)
         }
     }
@@ -93,7 +94,7 @@ class LoginViewController: UIViewController {
     }
     
     func login(email: String?, username: String?, password: String?,
-               finished: @escaping ((_: Bool, _: String?)->Void)) {
+               finished: @escaping ((_: Bool, _: String?, _: String?)->Void)) {
         if (email == nil || username == nil || password == nil) {
             return;
         }
@@ -123,11 +124,10 @@ class LoginViewController: UIViewController {
             
             if let json = data {
                 do {
-                    let deSerialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
+                    let deserialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
-                    finished(true, deSerialized?["access_token"])
-                    //TODO: Save refresh_token.
-                } catch { finished(false, nil) }
+                    finished(true, deserialized?["access_token"], deserialized?["refresh_token"])
+                } catch { finished(false, nil, nil) }
             }
         }
         task.resume();
