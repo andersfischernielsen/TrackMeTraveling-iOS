@@ -16,6 +16,7 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     var lastUpdated: Date?
     var backgroundEnabled = false
     let backgroundPreferenceIdentifier = "background_preference_enabled"
+    let usernameIdentifier = "user_username"
     let keychain = KeychainWrapper()
     var isAuthenticated = false
     var managedObjectContext: NSManagedObjectContext!
@@ -35,7 +36,9 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         styleMapView()
         //TODO: Use constant:
-        usernameLabel.text = UserDefaults.standard.object(forKey: "user_username") as? String
+        if let username = UserDefaults.standard.object(forKey: usernameIdentifier) as? String {
+            usernameLabel.text! += username
+        }
     }
 
     @objc func didBecomeActive(_ notification: NSNotification) {
@@ -81,7 +84,8 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func setupReceivingOfSignificationLocationChanges() {
-        if !(UserDefaults.standard.bool(forKey: backgroundPreferenceIdentifier)) {
+        if !(UserDefaults.standard.bool(forKey: backgroundPreferenceIdentifier))
+                || UserDefaults.standard.object(forKey: usernameIdentifier) == nil {
             locationManager.stopMonitoringSignificantLocationChanges()
             return
         }
@@ -118,13 +122,17 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     
     private func pushUpdatesToServer(location: CLLocationCoordinate2D) {
         let url = URL(string: "http://127.0.0.1:5000/coordinates")!
+        let access_token = UserDefaults.standard.object(forKey: "user_access_token") as! String;
         
         self.setBeginUpdateOnLabel(label: self.lastUpdatedLabel)
         var request = URLRequest(url: url)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.httpMethod = "POST"
-        let parameters = ["username": "fischer", "latitude": "\(location.latitude)", "longitude": "\(location.longitude)"]
+        let parameters = ["username": "fischer",
+                          "latitude": "\(location.latitude)",
+                          "longitude": "\(location.longitude)",
+                          "access_token": access_token]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
         } catch let error {
@@ -134,24 +142,40 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let _ = data, error == nil else {
                 print("[Unexpected error on POST] \(String(describing: error))")
-                self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel)
+                self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: false)
                 return
             }
-            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
-                print("[Unexpected HTTP response] statusCode should be 200, but is \(httpStatus.statusCode)")
-                print("response = \(String(describing: response))")
-                self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel)
-                return
-            }
-            self.lastUpdated = Date()
-            DispatchQueue.global().async() {
-                self.setMapViewLocation(location: location)
-                DispatchQueue.main.async() {
-                    self.updateLastUpdated(location: location)
+            if let httpStatus = response as? HTTPURLResponse {
+                if (httpStatus.statusCode == 401) {
+                    print(httpStatus.statusCode)
+                    let (access, refresh) = self.refreshToken()
+                    //TODO: Retry with refresh token.
+                    self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: true)
                 }
+                else if httpStatus.statusCode == 200 {
+                    print(httpStatus.statusCode)
+                    self.lastUpdated = Date()
+                    DispatchQueue.global().async() {
+                        self.setMapViewLocation(location: location)
+                        DispatchQueue.main.async() {
+                            self.updateLastUpdated(location: location)
+                        }
+                    }
+                }
+                else {
+                    print("response = \(String(describing: response))")
+                    self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: false)
+                }
+                return
             }
         }
         task.resume()
+    }
+    
+    func refreshToken() -> (String, String) {
+        //TODO: Implement refreshing tokens, saving and returning refresh_token + access_token.
+        //       call "/refreshtoken" with { username, refreshtoken }
+        return ("", "")
     }
     
     func showLoginView() {
@@ -174,9 +198,9 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    private func setUpdateFailedOnLabel(label: UILabel) {
+    private func setUpdateFailedOnLabel(label: UILabel, wasUnauthorized: Bool) {
         DispatchQueue.main.async() {
-            label.text = "Update failed."
+            label.text = wasUnauthorized ? "Unauthorized" : "Update failed."
             UIView.animate(withDuration: 4, animations: { label.alpha = 0 }, completion: nil)
         }
     }

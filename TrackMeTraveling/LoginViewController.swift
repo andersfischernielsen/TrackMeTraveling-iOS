@@ -56,21 +56,21 @@ class LoginViewController: UIViewController {
     func loggedIn(success: Bool, accessToken: String?) {
         if !success { return }
         
-        if let username = usernameField.text, let password = passwordField.text {
-            if username.isEmpty || password.isEmpty {
-                let alertView = UIAlertController(title: "Coul not log in",
-                                                  message: "Wrong username or password.",
-                                                  preferredStyle:. alert)
-                let okAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
-                alertView.addAction(okAction)
-                present(alertView, animated: true, completion: nil)
-                return
-            }
-        }
-
-        UserDefaults.standard.setValue(usernameField.text, forKey: usernameIdentifier)
-        UserDefaults.standard.setValue(accessToken, forKey: accessTokenIdentifier)
         DispatchQueue.main.async() {
+            if let username = self.usernameField.text, let password = self.passwordField.text {
+                if username.isEmpty || password.isEmpty {
+                    let alertView = UIAlertController(title: "Coul not log in",
+                                                      message: "Wrong username or password.",
+                                                      preferredStyle:. alert)
+                    let okAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
+                    alertView.addAction(okAction)
+                    self.present(alertView, animated: true, completion: nil)
+                    return
+                }
+            }
+
+            UserDefaults.standard.setValue(self.usernameField.text, forKey: self.usernameIdentifier)
+            UserDefaults.standard.setValue(accessToken, forKey: self.accessTokenIdentifier)
             self.performSegue(withIdentifier: "dismissLogin", sender: self)
         }
     }
@@ -125,7 +125,8 @@ class LoginViewController: UIViewController {
                 do {
                     let deSerialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
-                    finished(true, deSerialized?["token"])
+                    finished(true, deSerialized?["access_token"])
+                    //TODO: Save refresh_token.
                 } catch { finished(false, nil) }
             }
         }
