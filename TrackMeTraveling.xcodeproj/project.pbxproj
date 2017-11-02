@@ -11,6 +11,7 @@
 		9A829E0F1FA91320001A743D /* KeychainPasswordItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A829E0E1FA91320001A743D /* KeychainPasswordItem.swift */; };
 		9A836DC31FA7A00000DCCD2C /* KeychainWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A836DC21FA7A00000DCCD2C /* KeychainWrapper.m */; };
 		9A836DC51FA7A43A00DCCD2C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */; };
+		9A8B502E1FABD2F80065008E /* JSONRequestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8B502D1FABD2F80065008E /* JSONRequestHelper.swift */; };
 		9AA70AEB1F9E1B8D00AB252E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */; };
 		9AA70AED1F9E1B8D00AB252E /* LocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA70AEC1F9E1B8D00AB252E /* LocationViewController.swift */; };
 		9AA70AF01F9E1B8D00AB252E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9AA70AEE1F9E1B8D00AB252E /* Main.storyboard */; };
@@ -46,6 +47,7 @@
 		9A836DC11FA7A00000DCCD2C /* KeychainWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainWrapper.h; sourceTree = "<group>"; };
 		9A836DC21FA7A00000DCCD2C /* KeychainWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainWrapper.m; sourceTree = "<group>"; };
 		9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		9A8B502D1FABD2F80065008E /* JSONRequestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRequestHelper.swift; sourceTree = "<group>"; };
 		9AA70AE71F9E1B8D00AB252E /* TrackMeTraveling.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackMeTraveling.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9AA70AEC1F9E1B8D00AB252E /* LocationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewController.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 			children = (
 				9A18CA111FA7C424000FD3AE /* Video */,
 				9AA70AEA1F9E1B8D00AB252E /* AppDelegate.swift */,
+				9A8B502D1FABD2F80065008E /* JSONRequestHelper.swift */,
 				9AA70AEC1F9E1B8D00AB252E /* LocationViewController.swift */,
 				9A836DC41FA7A43A00DCCD2C /* LoginViewController.swift */,
 				9A829E0E1FA91320001A743D /* KeychainPasswordItem.swift */,
@@ -299,6 +302,7 @@
 				9A829E0F1FA91320001A743D /* KeychainPasswordItem.swift in Sources */,
 				9A836DC51FA7A43A00DCCD2C /* LoginViewController.swift in Sources */,
 				9A836DC31FA7A00000DCCD2C /* KeychainWrapper.m in Sources */,
+				9A8B502E1FABD2F80065008E /* JSONRequestHelper.swift in Sources */,
 				9AA70AED1F9E1B8D00AB252E /* LocationViewController.swift in Sources */,
 				9AA70AEB1F9E1B8D00AB252E /* AppDelegate.swift in Sources */,
 			);

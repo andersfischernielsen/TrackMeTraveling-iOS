@@ -16,9 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let isLoggedIn: Bool = false;
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        //let navigationController = window!.rootViewController as! UINavigationController;
-        //let controller = navigationController.topViewController as! LocationViewController;
-        //controller.managedObjectContext = self.managedObjectContext
         return true
     }
 

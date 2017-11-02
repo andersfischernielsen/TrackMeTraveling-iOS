@@ -47,10 +47,7 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginAction(_ sender: AnyObject) {
-        usernameField.resignFirstResponder()
-        passwordField.resignFirstResponder()
-        
-        login(email: emailField?.text, username: usernameField?.text, password: passwordField?.text, finished: loggedIn);
+        login(email: emailField?.text, username: usernameField?.text, password: passwordField?.text);
     }
     
     func loggedIn(success: Bool, accessToken: String?, refreshToken: String?) {
@@ -93,46 +90,29 @@ class LoginViewController: UIViewController {
         }
     }
     
-    func login(email: String?, username: String?, password: String?,
-               finished: @escaping ((_: Bool, _: String?, _: String?)->Void)) {
+    func login(email: String?, username: String?, password: String?) {
         if (email == nil || username == nil || password == nil) {
             return;
         }
         
-        let url = URL(string: "http://127.0.0.1:5000/auth")!
-        var request = URLRequest(url: url)
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.httpMethod = "POST"
         let parameters = ["username": username, "password": password];
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
-        } catch let error {
-            print(error.localizedDescription)
+        JSONRequestHelper.POSTRequestTo(url: "http://127.0.0.1:5000/auth", withData: parameters, successCallBack: handleResponse, errorCallback: handleFailureResponse)
+    }
+
+    func handleResponse(data: Data?, response: URLResponse?) {
+        if let json = data {
+            do {
+                let deserialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
+                self.loggedIn(success: true, accessToken: deserialized?["access_token"], refreshToken: deserialized?["refresh_token"])
+            } catch { self.loggedIn(success: false, accessToken: nil, refreshToken: nil) }
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let _ = data, error == nil else {
-                print("[Unexpected error on POST] \(String(describing: error))")
-                return
-            }
-            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
-                print("[Unexpected HTTP response] statusCode should be 200, but is \(httpStatus.statusCode)")
-                print("response = \(String(describing: response))")
-                return
-            }
-            
-            if let json = data {
-                do {
-                    let deserialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
-                    finished(true, deserialized?["access_token"], deserialized?["refresh_token"])
-                } catch { finished(false, nil, nil) }
-            }
-        }
-        task.resume();
     }
     
+    func handleFailureResponse() {
+        self.loggedIn(success: false, accessToken: nil, refreshToken: nil)
+    }
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
