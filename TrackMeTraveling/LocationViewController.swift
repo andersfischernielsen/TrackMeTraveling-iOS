@@ -121,56 +121,40 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     private func pushUpdatesToServer(location: CLLocationCoordinate2D) {
-        let url = URL(string: "http://127.0.0.1:5000/coordinates")!
+        let url = "http://127.0.0.1:5000/coordinates"
         let access_token = UserDefaults.standard.object(forKey: "user_access_token") as! String;
         
         self.setBeginUpdateOnLabel(label: self.lastUpdatedLabel)
-        var request = URLRequest(url: url)
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.httpMethod = "POST"
-        let parameters = ["username": "fischer",
-                          "latitude": "\(location.latitude)",
-                          "longitude": "\(location.longitude)",
-                          "access_token": access_token]
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
-        } catch let error {
-            print(error.localizedDescription)
-        }
+        let body = ["username": "fischer",
+                    "latitude": "\(location.latitude)",
+                    "longitude": "\(location.longitude)",
+                    "access_token": access_token]
         
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let _ = data, error == nil else {
-                print("[Unexpected error on POST] \(String(describing: error))")
-                self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: false)
-                return
-            }
+        func handleSuccessResponse(data: Data?, response: URLResponse?) {
             if let httpStatus = response as? HTTPURLResponse {
-                if (httpStatus.statusCode == 401) {
-                    print(httpStatus.statusCode)
-                    let (access, refresh) = self.refreshToken()
-                    //TODO: Retry with refresh token.
-                    //      If 401 again, log out.
-                    self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: true)
-                }
-                else if httpStatus.statusCode == 200 {
-                    print(httpStatus.statusCode)
-                    self.lastUpdated = Date()
-                    DispatchQueue.global().async() {
-                        self.setMapViewLocation(location: location)
-                        DispatchQueue.main.async() {
-                            self.updateLastUpdated(location: location)
-                        }
+                print(httpStatus.statusCode)
+                self.lastUpdated = Date()
+                DispatchQueue.global().async() {
+                    self.setMapViewLocation(location: location)
+                    DispatchQueue.main.async() {
+                        self.updateLastUpdated(location: location)
                     }
                 }
-                else {
-                    print("response = \(String(describing: response))")
-                    self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: false)
-                }
-                return
             }
         }
-        task.resume()
+        
+        JSONRequestHelper.POSTRequestTo(url: url, withData: body, successCallBack: handleSuccessResponse, errorCallback: handleErrorResponse, unauthorizedCallback: handleUnauthorizedResponse)
+    }
+
+    func handleUnauthorizedResponse() {
+        let (access, refresh) = self.refreshToken()
+        //TODO: Retry with refresh token.
+        //      If 401 again, log out.
+        self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: true)
+    }
+
+    func handleErrorResponse() {
+        self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: false)
     }
     
     func refreshToken() -> (String, String) {

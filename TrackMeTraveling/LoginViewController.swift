@@ -50,6 +50,26 @@ class LoginViewController: UIViewController {
         login(email: emailField?.text, username: usernameField?.text, password: passwordField?.text);
     }
     
+    func login(email: String?, username: String?, password: String?) {
+        if (email == nil || username == nil || password == nil) { return }
+        let parameters = ["username": username, "password": password];
+        JSONRequestHelper.POSTRequestTo(url: "http://127.0.0.1:5000/auth", withData: parameters, successCallBack: handleResponse, errorCallback: handleFailureResponse, unauthorizedCallback: {})
+    }
+    
+    func handleResponse(data: Data?, response: URLResponse?) {
+        if let json = data {
+            do {
+                let deserialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
+                self.loggedIn(success: true, accessToken: deserialized?["access_token"], refreshToken: deserialized?["refresh_token"])
+            } catch { self.loggedIn(success: false, accessToken: nil, refreshToken: nil) }
+        }
+    }
+    
+    func handleFailureResponse() {
+        self.loggedIn(success: false, accessToken: nil, refreshToken: nil)
+    }
+    
     func loggedIn(success: Bool, accessToken: String?, refreshToken: String?) {
         if !success { return }
         
@@ -90,28 +110,7 @@ class LoginViewController: UIViewController {
         }
     }
     
-    func login(email: String?, username: String?, password: String?) {
-        if (email == nil || username == nil || password == nil) {
-            return;
-        }
-        
-        let parameters = ["username": username, "password": password];
-        JSONRequestHelper.POSTRequestTo(url: "http://127.0.0.1:5000/auth", withData: parameters, successCallBack: handleResponse, errorCallback: handleFailureResponse)
-    }
-
-    func handleResponse(data: Data?, response: URLResponse?) {
-        if let json = data {
-            do {
-                let deserialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
-                self.loggedIn(success: true, accessToken: deserialized?["access_token"], refreshToken: deserialized?["refresh_token"])
-            } catch { self.loggedIn(success: false, accessToken: nil, refreshToken: nil) }
-        }
-    }
     
-    func handleFailureResponse() {
-        self.loggedIn(success: false, accessToken: nil, refreshToken: nil)
-    }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent

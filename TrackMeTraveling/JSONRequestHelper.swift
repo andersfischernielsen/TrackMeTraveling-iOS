@@ -11,7 +11,8 @@ import Foundation
 class JSONRequestHelper {
     static func POSTRequestTo(url: String, withData json: [String: String?]?,
                        successCallBack: @escaping ((Data?, URLResponse?)->Void),
-                       errorCallback: @escaping (()->Void)) {
+                       errorCallback: @escaping (()->Void),
+                       unauthorizedCallback: @escaping (()->Void)) {
         let url = URL(string: url)!
         var request = URLRequest(url: url)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -33,7 +34,7 @@ class JSONRequestHelper {
             
             if let httpResponse = response as? HTTPURLResponse {
                 if (httpResponse.statusCode == 401) {
-                    errorCallback()
+                    unauthorizedCallback()
                 }
                 else if httpResponse.statusCode == 200 {
                     successCallBack(data, response)
