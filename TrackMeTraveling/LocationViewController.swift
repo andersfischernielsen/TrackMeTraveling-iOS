@@ -131,14 +131,11 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
                     "access_token": access_token]
         
         func handleSuccessResponse(data: Data?, response: URLResponse?) {
-            if let httpStatus = response as? HTTPURLResponse {
-                print(httpStatus.statusCode)
-                self.lastUpdated = Date()
-                DispatchQueue.global().async() {
-                    self.setMapViewLocation(location: location)
-                    DispatchQueue.main.async() {
-                        self.updateLastUpdated(location: location)
-                    }
+            self.lastUpdated = Date()
+            DispatchQueue.global().async() {
+                self.setMapViewLocation(location: location)
+                DispatchQueue.main.async() {
+                    self.updateLastUpdated(location: location)
                 }
             }
         }
