@@ -139,9 +139,20 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad();
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
+        //Setup video player:
+        let filepath = Bundle.main.path(forResource: "crop.mp4", ofType: nil, inDirectory: nil);
+        let fileURL = NSURL.fileURL(withPath:filepath!);
+        let playerItem = AVPlayerItem.init(url: fileURL);
+        let avPlayer = AVQueuePlayer.init();
+        avPlayer.actionAtItemEnd = AVPlayerActionAtItemEnd.none;
+        let videoLayer = AVPlayerLayer.init(player: avPlayer);
+        videoLayer.frame = self.view.bounds;
+        videoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill;
+        self.view.layer.insertSublayer(videoLayer, at: 0);
+        videoLooper = AVPlayerLooper(player: avPlayer, templateItem: playerItem);
+        avPlayer.play();
+        
+        //Set appearance:
         self.setNeedsStatusBarAppearanceUpdate();
         if (signInState) { emailField.isHidden = true; }
         
@@ -156,18 +167,5 @@ class LoginViewController: UIViewController {
         }
         
         [usernameField, passwordField, emailField].forEach { field in setTextField(field: field)}
-        
-        //Setup video player:
-        let filepath = Bundle.main.path(forResource: "splash.mp4", ofType: nil, inDirectory: nil);
-        let fileURL = NSURL.fileURL(withPath:filepath!);
-        let playerItem = AVPlayerItem.init(url: fileURL);
-        let avPlayer = AVQueuePlayer.init();
-        avPlayer.actionAtItemEnd = AVPlayerActionAtItemEnd.none;
-        let videoLayer = AVPlayerLayer.init(player: avPlayer);
-        videoLayer.frame = self.view.bounds;
-        videoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill;
-        self.view.layer.insertSublayer(videoLayer, at: 0);
-        videoLooper = AVPlayerLooper(player: avPlayer, templateItem: playerItem);
-        avPlayer.play();
     }
 }
