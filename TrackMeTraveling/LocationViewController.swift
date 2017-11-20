@@ -17,7 +17,8 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     var backgroundEnabled = false
     let backgroundPreferenceIdentifier = "background_preference_enabled"
     let usernameIdentifier = "user_username"
-    let keychain = KeychainWrapper()
+    let accessTokenIdentifier = "user_access_token"
+    let refreshTokenIdentifier = "user_refresh_token"
     var isAuthenticated = false
     var managedObjectContext: NSManagedObjectContext!
     
@@ -62,6 +63,10 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     @IBAction func forceUpdate(_ sender: UIButton) {
+        if CLLocationManager.authorizationStatus() != .authorizedAlways {
+            locationManager.requestAlwaysAuthorization()
+        }
+        
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager.requestLocation()
         locationManager.stopUpdatingLocation()
@@ -121,7 +126,7 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     private func pushUpdatesToServer(location: CLLocationCoordinate2D) {
-        let url = "http://127.0.0.1:5000/coordinates"
+        let url = "/coordinates"
         let access_token = UserDefaults.standard.object(forKey: "user_access_token") as! String;
         
         self.setBeginUpdateOnLabel(label: self.lastUpdatedLabel)
@@ -140,24 +145,51 @@ class LocationViewController: UIViewController, CLLocationManagerDelegate {
             }
         }
         
+        func handleUnauthorizedResponse() {
+            self.callRefreshToken(location: location)
+        }
+        
         JSONRequestHelper.POSTRequestTo(url: url, withData: body, successCallBack: handleSuccessResponse, errorCallback: handleErrorResponse, unauthorizedCallback: handleUnauthorizedResponse)
-    }
-
-    func handleUnauthorizedResponse() {
-        let (access, refresh) = self.refreshToken()
-        //TODO: Retry with refresh token.
-        //      If 401 again, log out.
-        self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: true)
     }
 
     func handleErrorResponse() {
         self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: false)
     }
     
-    func refreshToken() -> (String, String) {
-        //TODO: Implement refreshing tokens, saving and returning refresh_token + access_token.
-        //       call "/refreshtoken" with { username, refreshtoken }
-        return ("", "")
+    func callRefreshToken(location: CLLocationCoordinate2D) {
+        let url = "/refreshtoken"
+        
+        func receiveAccessToken (data: Data?, response: URLResponse?) {
+            if let json = data {
+                do {
+                    let deserialized = try JSONSerialization.jsonObject(with: json, options: []) as? [String: String]
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loginSuccessful"), object: self)
+                    let accessToken = deserialized?["access_token"]
+                    let refreshToken = deserialized?["refresh_token"]
+                    UserDefaults.standard.set(accessToken, forKey: accessTokenIdentifier)
+                    UserDefaults.standard.set(refreshToken, forKey: refreshTokenIdentifier)
+                    
+                    pushUpdatesToServer(location: location)
+                } catch {
+                    self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: true)
+                }
+            }
+        }
+        
+        func error() {
+            self.setUpdateFailedOnLabel(label: self.lastUpdatedLabel, wasUnauthorized: true)
+        }
+        
+        func unauthorized() {
+            isAuthenticated = false
+            showLoginView()
+        }
+        
+        let refresh = UserDefaults.standard.object(forKey: refreshTokenIdentifier) as! String
+        let access = UserDefaults.standard.object(forKey: accessTokenIdentifier) as! String
+        let data = ["refresh_token": refresh, "access_token": access,]
+        
+        JSONRequestHelper.POSTRequestTo(url: url, withData: data, successCallBack: receiveAccessToken(data:response:), errorCallback: error, unauthorizedCallback: unauthorized)
     }
     
     func showLoginView() {

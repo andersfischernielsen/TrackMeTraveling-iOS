@@ -13,7 +13,8 @@ class JSONRequestHelper {
                        successCallBack: @escaping ((Data?, URLResponse?)->Void),
                        errorCallback: @escaping (()->Void),
                        unauthorizedCallback: @escaping (()->Void)) {
-        let url = URL(string: url)!
+        let baseURL = "http://localhost:5000"
+        let url = URL(string: baseURL + url)!
         var request = URLRequest(url: url)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")

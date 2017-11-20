@@ -53,7 +53,7 @@ class LoginViewController: UIViewController {
     func login(email: String?, username: String?, password: String?) {
         if (email == nil || username == nil || password == nil) { return }
         let parameters = ["username": username, "password": password];
-        JSONRequestHelper.POSTRequestTo(url: "http://127.0.0.1:5000/auth", withData: parameters, successCallBack: handleResponse, errorCallback: handleFailureResponse, unauthorizedCallback: {})
+        JSONRequestHelper.POSTRequestTo(url: "/auth", withData: parameters, successCallBack: handleResponse, errorCallback: handleFailureResponse, unauthorizedCallback: {})
     }
     
     func handleResponse(data: Data?, response: URLResponse?) {
